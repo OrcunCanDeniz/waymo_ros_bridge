@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>waymo_viewer</name>
+  <name>waymo_ros_bridge</name>
   <version>0.0.0</version>
-  <description>The waymo_viewer package</description>
+  <description>The waymo_ros_bridge package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

@@ -113,53 +113,6 @@ def parse_range_image_and_camera_projection(frame):
 
     return range_images, camera_projections, range_image_top_pose
 
-# def convert_range_image_to_point_cloud_native(frame, range_images, camera_projections, range_image_top_pose, ri_index = 0):
-    # calibrations = sorted(frame.context.laser_calibrations, key=lambda c: c.name)
-    # lasers = sorted(frame.lasers, key=lambda laser: laser.name)
-    # points = [] 
-    # cp_points = []
-
-    # frame_pose = tf.convert_to_tensor(np.reshape(np.array(frame.pose.transform), [4, 4]))
-    # # [H, W, 6]
-    # range_image_top_pose_tensor = tf.reshape(tf.convert_to_tensor(range_image_top_pose.data), range_image_top_pose.shape.dims)
-    # # [H, W, 3, 3]
-    # range_image_top_pose_tensor_rotation = transform_utils.get_rotation_matrix(range_image_top_pose_tensor[..., 0], range_image_top_pose_tensor[..., 1],range_image_top_pose_tensor[..., 2])
-    # range_image_top_pose_tensor_translation = range_image_top_pose_tensor[..., 3:]
-    # range_image_top_pose_tensor = transform_utils.get_transform(range_image_top_pose_tensor_rotation,range_image_top_pose_tensor_translation)
-    # for c in calibrations:
-    #     range_image = range_images[c.name][ri_index]
-
-    #     if len(c.beam_inclinations) == 0:
-    #         beam_inclinations = range_image_utils.compute_inclination(tf.constant([c.beam_inclination_min, c.beam_inclination_max]),height=range_image.shape.dims[0])
-    #     else:
-    #         beam_inclinations = tf.constant(c.beam_inclinations)
-
-    #     beam_inclinations = tf.reverse(beam_inclinations, axis=[-1])
-    #     extrinsic = np.reshape(np.array(c.extrinsic.transform), [4, 4])
-
-    #     range_image_tensor = tf.reshape(tf.convert_to_tensor(range_image.data), range_image.shape.dims)
-    #     pixel_pose_local = None
-    #     frame_pose_local = None
-
-    #     if c.name == open_dataset.LaserName.TOP:
-    #         pixel_pose_local = range_image_top_pose_tensor
-    #         pixel_pose_local = tf.expand_dims(pixel_pose_local, axis=0)
-    #         frame_pose_local = tf.expand_dims(frame_pose, axis=0)
-    #     range_image_mask = range_image_tensor > 0
-    #     range_image_tensor = tf.where(range_image_mask, range_image_tensor,
-    #                             tf.ones_like(range_image_tensor) * 1e10)
-    #     range_image_cartesian = range_image_utils.extract_point_cloud_from_range_image(tf.expand_dims(range_image_tensor[..., 0], axis=0),tf.expand_dims(extrinsic, axis=0),tf.expand_dims(tf.convert_to_tensor(beam_inclinations), axis=0),pixel_pose=pixel_pose_local,frame_pose=frame_pose_local)
-
-    #     range_image_cartesian = tf.squeeze(range_image_cartesian, axis=0)
-    #     points_tensor = tf.gather_nd(range_image_cartesian,tf.where(range_image_mask))
-
-    #     cp = camera_projections[c.name][0]
-    #     cp_tensor = tf.reshape(tf.convert_to_tensor(cp.data), cp.shape.dims)
-    #     cp_points_tensor = tf.gather_nd(cp_tensor, tf.where(range_image_mask))
-    #     points.append(points_tensor.numpy())
-    #     cp_points.append(cp_points_tensor.numpy())
-
-    # return points, cp_points
 
 def convert_range_image_to_point_cloud(frame, range_images, camera_projections, range_image_top_pose, ri_index=(0, 1)):
     """
