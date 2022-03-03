@@ -30,7 +30,7 @@ sys.path.remove('/opt/ros/melodic/lib/python2.7/dist-packages')
 from transformations import quaternion_from_euler, quaternion_from_matrix
 import cv2
 import pdb
-lib_path = rospy.get_param("/waymo_viewer/lib_path", '')
+lib_path = rospy.get_param("/waymo_ros_bridge/lib_path", '')
 
 # TODO: Change this to your own setting
 #os.environ['PYTHONPATH']='/env/python:/home/user/Dataset/waymo-od'
@@ -206,7 +206,6 @@ def convert_range_image_to_point_cloud(frame, range_images, camera_projections, 
         points_NLZ.append(np.concatenate(points_NLZ_single, axis=0))
         points_intensity.append(np.concatenate(points_intensity_single, axis=0))
         points_elongation.append(np.concatenate(points_elongation_single, axis=0))
-
     return points, cp_points, points_NLZ, points_intensity, points_elongation
 
 def find_camera_label(name, camera_labels):
@@ -240,9 +239,9 @@ sign = (0, 255, 255)
 
 def talker():
 
-    rospy.init_node("waymo_viewer", anonymous = True)
-    folderpath = rospy.get_param("/waymo_viewer/folderpath", '')
-    bag_path = rospy.get_param("/waymo_viewer/bag_path", '')
+    rospy.init_node("waymo_ros_bridge", anonymous = True)
+    folderpath = rospy.get_param("/waymo_ros_bridge/folderpath", '')
+    bag_path = rospy.get_param("/waymo_ros_bridge/bag_path", '')
     files = os.listdir(folderpath)
 
     bLidar = True
@@ -371,7 +370,6 @@ def talker():
                 (range_images, camera_projections, range_image_top_pose) = parse_range_image_and_camera_projection(frame)
                 # Calculate the point cloud
                 points, cp_points, points_NLZ, points_intensity, points_elongation = convert_range_image_to_point_cloud(frame, range_images, camera_projections,range_image_top_pose)
-                # pdb.set_trace()
                 # publish lidar pointcloud and label
                 for index, lidar_points in enumerate(points):
                     lidar_msg = PointCloud2()
@@ -380,7 +378,6 @@ def talker():
                     lidar_data = []
                     
                     intensities = points_intensity[index]
-                    
                     for intensity_idx, point in enumerate(points[index]):
                         lidar_data.append([point[0], point[1], point[2], intensities[intensity_idx]])
                     cloud_arr = np.array(lidar_data)
@@ -390,7 +387,6 @@ def talker():
                     lidar_msg.fields = fields
                     lidar_msg.is_bigendian = False # assumption
                     lidar_msg.point_step = 16
-                    # pdb.set_trace()
                     # lidar_msg.point_step = cloud_arr.dtype.itemsize
                     lidar_msg.row_step = lidar_msg.point_step*cloud_arr.shape[1]
                     lidar_msg.is_dense = False
